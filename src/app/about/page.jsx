@@ -6,7 +6,7 @@ import { Container } from '@/components/Container'
 import { FadeIn, FadeInStagger } from '@/components/FadeIn'
 import { GridList, GridListItem } from '@/components/GridList'
 import { PageIntro } from '@/components/PageIntro'
-import { PageLinks } from '@/components/PageLinks'
+// import { PageLinks } from '@/components/PageLinks'
 import { SectionIntro } from '@/components/SectionIntro'
 import { StatList, StatListItem } from '@/components/StatList'
 import imageAngelaFisher from '@/images/team/angela-fisher.jpeg'
@@ -220,12 +220,12 @@ export default async function About() {
 
       <Team />
 
-      <PageLinks
+      {/* <PageLinks
         className="mt-24 sm:mt-32 lg:mt-40"
         title="From the blog"
         intro="Our team of experienced designers and developers has just one thing on their mind; working on your ideas to draw a smile on the face of your users worldwide. From conducting Brand Sprints to UX Design."
         pages={''}
-      />
+      /> */}
 
       <ContactSection />
     </>
