@@ -8,28 +8,16 @@ import { Container } from '@/components/Container'
 import { FadeIn } from '@/components/FadeIn'
 import { PageIntro } from '@/components/PageIntro'
 import { formatDate } from '@/lib/formatDate'
+import { loadMDXMetadata } from '@/lib/loadMDXMetadata'
 
-// export const metadata = {
-//   title: 'Blog',
-//   description:
-//     'Stay up-to-date with the latest industry news as our marketing teams finds new ways to re-purpose old CSS tricks articles.',
-// }
-
-const getPosts = async () => {
-  const api = await fetch(
-    `${process.env.ADMIN_URL}/api/collections/blogs/records`,
-    {
-      cache: 'no-cache',
-    }
-  )
-
-  const response = await api.json()
-
-  return response.items
+export const metadata = {
+  title: 'Blog',
+  description:
+    'Stay up-to-date with the latest industry news as our marketing teams finds new ways to re-purpose old CSS tricks articles.',
 }
 
 export default async function Blog() {
-  const articles = await getPosts()
+  let articles = await loadMDXMetadata('blog')
 
   return (
     <>
@@ -43,23 +31,23 @@ export default async function Blog() {
       <Container className="mt-24 sm:mt-32 lg:mt-40">
         <div className="space-y-24 lg:space-y-32">
           {articles.map((article) => (
-            <FadeIn key={article.id}>
+            <FadeIn key={article.href}>
               <article>
                 <Border className="pt-16">
                   <div className="relative lg:-mx-4 lg:flex lg:justify-end">
                     <div className="pt-10 lg:w-2/3 lg:flex-none lg:px-4 lg:pt-0">
                       <h2 className="font-display text-2xl font-semibold text-neutral-950">
-                        <Link href={article.id}>{article.title}</Link>
+                        <Link href={article.href}>{article.title}</Link>
                       </h2>
                       <dl className="lg:absolute lg:left-0 lg:top-0 lg:w-1/3 lg:px-4">
                         <dt className="sr-only">Published</dt>
                         <dd className="absolute left-0 top-0 text-sm text-neutral-950 lg:static">
-                          <time dateTime={article.updated}>
-                            {formatDate(article.updated)}
+                          <time dateTime={article.date}>
+                            {formatDate(article.date)}
                           </time>
                         </dd>
                         <dt className="sr-only">Author</dt>
-                        {/* <dd className="mt-6 flex gap-x-4">
+                        <dd className="mt-6 flex gap-x-4">
                           <div className="flex-none overflow-hidden rounded-xl bg-neutral-100">
                             <Image
                               alt=""
@@ -73,13 +61,13 @@ export default async function Blog() {
                             </div>
                             <div>{article.author.role}</div>
                           </div>
-                        </dd> */}
+                        </dd>
                       </dl>
                       <p className="mt-6 max-w-2xl text-base text-neutral-600">
                         {article.description}
                       </p>
                       <Button
-                        href={`blog/${article.id}`}
+                        href={article.href}
                         aria-label={`Read more: ${article.title}`}
                         className="mt-8"
                       >
