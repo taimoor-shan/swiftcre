@@ -54,7 +54,7 @@ export function Logo({
           filled={filled}
         />
       </svg>
-      <h2 className="text-3xl font-semibold">SwiftCRE</h2>
+      <h2 className="text-3xl font-semibold dark:text-white hidden md:block">SwiftCRE</h2>
     </div>
   )
 }
