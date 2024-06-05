@@ -1,4 +1,6 @@
-import { useId } from 'react'
+'use client'
+
+import { useState, useId } from 'react'
 import Link from 'next/link'
 
 import { Border } from '@/components/Border'
@@ -45,42 +47,152 @@ function RadioInput({ label, ...props }) {
 }
 
 function ContactForm() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    phone: '',
+    message: '',
+    budget: '',
+  })
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(false)
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(false)
+    setSuccess(false)
+
+    try {
+      console.log('Submitting form data:', formData)
+      const response = await fetch('/api/mailer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        console.log('Form submission successful')
+        setSuccess(true)
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          phone: '',
+          message: '',
+          budget: '',
+        })
+      } else {
+        const errorData = await response.json()
+        console.error('Form submission failed:', errorData)
+        setError(true)
+      }
+    } catch (error) {
+      console.error('Form submission error:', error)
+      setError(true)
+    }
+
+    setLoading(false)
+  }
+
   return (
     <FadeIn className="lg:order-last">
-      <form>
+      <form onSubmit={handleSubmit}>
         <h2 className="font-display text-base font-semibold text-neutral-950">
           Work inquiries
         </h2>
         <div className="isolate mt-6 -space-y-px rounded-2xl bg-white/50">
-          <TextInput label="Name" name="name" autoComplete="name" />
+          <TextInput
+            label="Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            autoComplete="name"
+            required
+          />
           <TextInput
             label="Email"
             type="email"
             name="email"
+            value={formData.email}
+            onChange={handleChange}
             autoComplete="email"
+            required
           />
           <TextInput
             label="Company"
             name="company"
+            value={formData.company}
+            onChange={handleChange}
             autoComplete="organization"
           />
-          <TextInput label="Phone" type="tel" name="phone" autoComplete="tel" />
-          <TextInput label="Message" name="message" />
+          <TextInput
+            label="Phone"
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            autoComplete="tel"
+          />
+          <TextInput
+            label="Message"
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            required
+          />
           <div className="border border-neutral-300 px-6 py-8 first:rounded-t-2xl last:rounded-b-2xl">
             <fieldset>
               <legend className="text-base/6 text-neutral-500">Budget</legend>
               <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2">
-                <RadioInput label="$25K – $50K" name="budget" value="25" />
-                <RadioInput label="$50K – $100K" name="budget" value="50" />
-                <RadioInput label="$100K – $150K" name="budget" value="100" />
-                <RadioInput label="More than $150K" name="budget" value="150" />
+                <RadioInput
+                  label="$25K – $50K"
+                  name="budget"
+                  value="25"
+                  onChange={handleChange}
+                />
+                <RadioInput
+                  label="$50K – $100K"
+                  name="budget"
+                  value="50"
+                  onChange={handleChange}
+                />
+                <RadioInput
+                  label="$100K – $150K"
+                  name="budget"
+                  value="100"
+                  onChange={handleChange}
+                />
+                <RadioInput
+                  label="More than $150K"
+                  name="budget"
+                  value="150"
+                  onChange={handleChange}
+                />
               </div>
             </fieldset>
           </div>
         </div>
-        <Button type="submit" className="mt-10">
-          Let’s work together
+        <Button type="submit" className="mt-10" disabled={loading}>
+          {loading ? 'Sending...' : 'Let’s work together'}
         </Button>
+        {success && (
+          <p className="mt-4 text-green-600">Message sent successfully!</p>
+        )}
+        {error && (
+          <p className="mt-4 text-red-600">
+            Failed to send message. Please try again later.
+          </p>
+        )}
       </form>
     </FadeIn>
   )
@@ -132,11 +244,6 @@ function ContactDetails() {
     </FadeIn>
   )
 }
-
-// export const metadata = {
-//   title: 'Contact Us',
-//   description: 'Let’s work together. We can’t wait to hear from you.',
-// }
 
 export default function Contact() {
   return (
